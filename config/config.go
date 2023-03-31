@@ -1,17 +1,16 @@
 package config
 
 import (
+	"errors"
 	"os"
-
-	"github.com/JoseAngel1196/weather/print"
 )
 
-func GetEnv(key string) string {
+func GetEnv(key string) (string, error) {
 	value, ok := os.LookupEnv(key)
 
 	if !ok {
-		print.ExitOnError("Hey, you need to set the credentials on your .env 😭", nil)
+		return "", errors.New((".env is not setup! 😭"))
 	}
 
-	return value
+	return value, nil
 }

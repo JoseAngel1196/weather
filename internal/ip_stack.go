@@ -8,7 +8,6 @@ import (
 	"net/url"
 
 	"github.com/JoseAngel1196/weather/config"
-	"github.com/JoseAngel1196/weather/print"
 )
 
 type Location struct {
@@ -58,7 +57,7 @@ type Security struct {
 	ThreatTypes interface{} `json:"threat_types"`
 }
 
-type UserLocation struct {
+type UserLocationResponse struct {
 	IP            string     `json:"ip"`
 	Hostname      string     `json:"hostname"`
 	Type          string     `json:"type"`
@@ -79,43 +78,56 @@ type UserLocation struct {
 	Security      Security   `json:"security"`
 }
 
-func GetUserLocation() string {
-	// Get user location using ipstack
-	ipStackApiKey := config.GetEnv("IP_STACK_API_KEY")
-	var publicIpAddress string = getUserPublicIp()
+type userLocation struct {
+	latitude  float64
+	longitude float64
+}
+
+func GetUserLocation() (userLocation, error) {
+	ipStackApiKey, err := config.GetEnv("IP_STACK_API_KEY")
+	if err != nil {
+		return userLocation{}, err
+	}
+
+	publicIpAddress, err := getUserPublicIp()
+	if err != nil {
+		return userLocation{}, err
+	}
+
 	httpUrl := fmt.Sprintf("http://api.ipstack.com/%s?access_key=%s", publicIpAddress, url.QueryEscape(ipStackApiKey))
 
 	resp, err := http.Get(httpUrl)
 	if err != nil {
-		print.ExitOnError("", err)
+		return userLocation{}, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		print.ExitOnError("", err)
+		return userLocation{}, err
 	}
 
-	var bodyAPI UserLocation
+	var bodyAPI UserLocationResponse
 	err = json.Unmarshal(body, &bodyAPI)
 	if err != nil {
-		print.ExitOnError("Failed to parse the user location", err)
+		return userLocation{}, err
 	}
-	fmt.Println(bodyAPI)
-	return bodyAPI.IP
+
+	userLocation := userLocation{latitude: bodyAPI.Latitude, longitude: bodyAPI.Longitude}
+	return userLocation, nil
 }
 
-func getUserPublicIp() string {
+func getUserPublicIp() (string, error) {
 	resp, err := http.Get("https://api.ipify.org")
 	if err != nil {
-		print.ExitOnError("Failed to get public IP address:", err)
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	ip, err := io.ReadAll(resp.Body)
 	if err != nil {
-		print.ExitOnError("Failed to read response body:", err)
+		return "", err
 	}
 
-	return string(ip)
+	return string(ip), nil
 }
