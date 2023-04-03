@@ -26,4 +26,6 @@ func Execute() {
 }
 
 func init() {
+	persistent := rootCmd.PersistentFlags()
+	persistent.String("location", "", "Your current location")
 }
