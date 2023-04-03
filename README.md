@@ -7,26 +7,21 @@ A CLI tool that retrieves and displays the current weather conditions for a give
 To install the tool, simply run the following command:
 
 ```bash
-go install github.com/yourusername/weather-cli
+go install github.com/JoseAngel1196/weather-cli
 ```
 
 ## Usage
 
 To use the tool, run the following command:
 
-```bash
-weather-cli --location "New York"
-```
-
-Replace "New York" with the desired location.
-
-By default, the tool will display the temperature in Fahrenheit. You can specify the temperature unit using the --unit flag, like so:
-
-```bash
-weather-cli --location "New York" --unit celsius
-```
-
-The available temperature units are kelvin, celsius, and fahrenheit.
+1. **`weather current`** - Display the current weather conditions at a given location, including the temperature, humidity, wind speed, and other relevant information. —> IMPLEMENTED
+2. **`weather forecast`** - Display the weather forecast for the next few days at a given location, including high and low temperatures, chance of precipitation, and other relevant information.
+3. **`weather alert`** - Display any weather alerts or warnings issued by the National Weather Service for a given location.
+4. **`weather radar`** - Display a radar map of the current weather conditions at a given location.
+5. **`weather compare`** - Compare the weather conditions at two different locations, displaying the differences in temperature, precipitation, and other relevant information.
+6. **`weather history`** - Display historical weather data for a given location, including average temperatures, precipitation levels, and other relevant information.
+7. **`weather map`** - Display a map showing the current weather conditions for a larger area, allowing the user to zoom in or out to view weather conditions in different regions.
+8. **`weather alerts subscribe`** - Allow users to subscribe to weather alerts and receive notifications via email or SMS when severe weather is expected in their area.
 
 ## Contributing
 
