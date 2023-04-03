@@ -1,4 +1,4 @@
-package internal
+package share
 
 const absoluteZeroCelsius float64 = 273.15
 

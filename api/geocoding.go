@@ -31,14 +31,9 @@ func GetGeolocation(address share.UserAddress) (share.Location, error) {
 	}
 
 	var geoResults share.GeoResults
-	resp, err := unmarshalResponse(body)
+	err = unmarshalResponse(body, &geoResults)
 	if err != nil {
 		return location, err
-	}
-
-	geoResults, ok := resp.(share.GeoResults)
-	if !ok {
-		return location, errors.New("Cannot convert ResponseData to GeoResults")
 	}
 
 	if strings.ToUpper(geoResults.Status) != "OK" {

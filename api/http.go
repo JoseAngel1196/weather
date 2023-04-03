@@ -2,11 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
-
-	"github.com/JoseAngel1196/weather/share"
+	"reflect"
 )
 
 type ResponseData interface {
@@ -41,23 +39,20 @@ func httpRequest(url string) ([]byte, error) {
 	return body, nil
 }
 
-func unmarshalResponse(body []byte) (ResponseData, error) {
-	// define a variable to hold the response struct
-	var response ResponseData
+func unmarshalResponse(body []byte, v ResponseData) error {
+	// create a new value of the same type as the second argument
+	// this will be used to unmarshal the response into the correct struct
+	valueType := reflect.ValueOf(v).Elem().Type()
+	valuePtr := reflect.New(valueType)
 
-	// unmarshal the response body into the appropriate struct based on the API response
-	var dataA share.GeoResults
-	if json.Unmarshal(body, &dataA) == nil && dataA.Results != nil {
-		response = dataA
-	} else {
-		var dataB share.WeatherPoints
-		if json.Unmarshal(body, &dataB) == nil && dataB.ID != "" {
-			response = dataB
-		} else {
-			// if the response is not of a known type, return an error
-			return nil, errors.New("unknown response type")
-		}
+	// use the reflect package to determine the type of the response
+	err := json.Unmarshal(body, valuePtr.Interface())
+	if err != nil {
+		return err
 	}
 
-	return response, nil
+	// update the value of the v argument with the unmarshaled value
+	reflect.ValueOf(v).Elem().Set(valuePtr.Elem())
+
+	return nil
 }

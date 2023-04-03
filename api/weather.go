@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/JoseAngel1196/weather/share"
@@ -20,15 +19,26 @@ func GetWeatherPoints(latitude, longitude float64) (share.WeatherPoints, error) 
 		return weatherPoints, err
 	}
 
-	resp, err := unmarshalResponse(body)
+	err = unmarshalResponse(body, &weatherPoints)
 	if err != nil {
 		return weatherPoints, err
 	}
 
-	weatherPoints, ok := resp.(share.WeatherPoints)
-	if !ok {
-		return weatherPoints, errors.New("Cannot convert ResponseData to PointsData")
+	return weatherPoints, nil
+}
+
+func GetForecastHourly(forecastHourlyUrl string) (share.ForecastHourly, error) {
+	var forecastHourly share.ForecastHourly
+
+	body, err := httpRequest(forecastHourlyUrl)
+	if err != nil {
+		return forecastHourly, err
 	}
 
-	return weatherPoints, nil
+	err = unmarshalResponse(body, &forecastHourly)
+	if err != nil {
+		return forecastHourly, err
+	}
+
+	return forecastHourly, nil
 }
