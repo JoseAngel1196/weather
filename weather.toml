@@ -1,0 +1,8 @@
+title = "Weather CLI"
+
+[address]
+street = "38 W 129th st"
+city = "New York"
+state = "New York"
+country = "NY"
+postal_code = "10027"

@@ -132,7 +132,6 @@ type Location struct {
 
 type UserAddress struct {
 	Street string
-	// Number     int
 	City       string
 	State      string
 	Country    string

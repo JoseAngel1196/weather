@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -8,17 +9,20 @@ import (
 	"github.com/JoseAngel1196/weather/share"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func Current(cmd *cobra.Command, args []string) {
-	// TODO: Change this.
-	userAddress := share.UserAddress{
-		Street:     "38 West, 129 street",
-		City:       "New York",
-		State:      "New York",
-		Country:    "USA",
-		PostalCode: "10027",
-	}
+	address := viper.GetStringMap("address")
+
+	// Convert map to JSON
+	jsonData, err := json.Marshal(address)
+	cobra.CheckErr(err)
+
+	// Unmarshal JSON to struct
+	var userAddress share.UserAddress
+	err = json.Unmarshal(jsonData, &userAddress)
+	cobra.CheckErr(err)
 
 	location, err := api.GetGeolocation(userAddress)
 	if err != nil {
@@ -57,6 +61,8 @@ func getCurrentPeriod(forecastData share.ForecastHourly) share.ForecastPeriod {
 }
 
 func printCurrent(currentWeather share.ForecastPeriod) {
+	address := viper.GetStringMap("address")
+
 	blue := color.New(color.FgBlue)
 	yellow := color.New(color.FgYellow)
 	green := color.New(color.FgGreen)
@@ -71,9 +77,9 @@ func printCurrent(currentWeather share.ForecastPeriod) {
 	fmt.Println()
 	blue.Printf("🌤️  Current Weather Conditions for %v %d, %d: 🌤️\n", month, day, year)
 	fmt.Println("----------------------------------")
-	white.Printf("📍 Location: %s\n", "New York")
-	green.Printf("🌡️ Temperature: %s\n", currentWeather.Temperature)
-	yellow.Printf("💧 Humidity: %s\n", currentWeather.RelativeHumidity.Value)
+	white.Printf("📍 Location: %v\n", address["city"])
+	green.Printf("🌡️ Temperature: %v\n", currentWeather.Temperature)
+	yellow.Printf("💧 Humidity: %v\n", currentWeather.RelativeHumidity.Value)
 	green.Printf("💨 Wind: %s\n\n", currentWeather.WindSpeed)
 
 	blue.Printf("🌡️ Additional Information 🌡️\n")

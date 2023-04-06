@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -26,6 +27,25 @@ func Execute() {
 }
 
 func init() {
+	cobra.OnInitialize(initConfig)
+
 	persistent := rootCmd.PersistentFlags()
 	persistent.String("location", "", "Your current location")
+}
+
+// initConfig reads a config file if set.
+func initConfig() {
+	dir, err := os.Getwd()
+	cobra.CheckErr(err)
+
+	viper.AddConfigPath(dir)
+	viper.SetConfigType("toml")
+	viper.SetConfigName("weather")
+	viper.SafeWriteConfig()
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		//	fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+
 }
